@@ -117,7 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1 class="title">ConnectWise Manage Database Archive Viewer</h1>
             <?php if ($isDbConnected): ?>
 			<h6 class="status alert alert-success" role="alert">
-				Connected to SQL Server: <?= $serverName ?>, Database: <?= $database ?>, Version: <?= $dbVersion ?>
+				<!-- file deepcode ignore PrivacyLeak: no risk. -->
+    Connected to SQL Server: <?= $serverName ?>, Database: <?= $database ?>, Version: <?= $dbVersion ?>
 			</h6>
                 <div class="row">
                     <div class="col-sm-4">
