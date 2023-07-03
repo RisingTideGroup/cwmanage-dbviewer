@@ -102,9 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'customers.php') echo 'active'; ?>">
                     <a class="nav-link" href="/customers.php">Customers</a>
                 </li>
-                <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'contacts.php') echo 'active'; ?>">
-                    <a class="nav-link" href="/contacts.php">Contacts</a>
-                </li>
                 <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'tickets.php') echo 'active'; ?>">
                     <a class="nav-link" href="/tickets.php">Tickets</a>
                 </li>
@@ -120,8 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1 class="title">ConnectWise Manage Database Archive Viewer</h1>
             <?php if ($isDbConnected): ?>
 			<h6 class="status alert alert-success" role="alert">
-				<!-- file deepcode ignore PrivacyLeak: Purposely displaying server info for connected session to the user. -->
-    Connected to SQL Server: <?= $serverName ?>, Database: <?= $database ?>, Version: <?= $dbVersion ?>
+				Connected to SQL Server: <?= $serverName ?>, Database: <?= $database ?>, Version: <?= $dbVersion ?>
 			</h6>
                 <div class="row">
                     <div class="col-sm-4">
@@ -130,15 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <h5 class="card-title">Clients</h5>
                                 <p class="card-text">View  clients</p>
                                 <a href="customers.php" class="btn btn-primary">Go to Clients</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Contacts</h5>
-                                <p class="card-text">View  contacts</p>
-                                <a href="contacts.php" class="btn btn-primary">Go to Contacts</a>
                             </div>
                         </div>
                     </div>

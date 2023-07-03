@@ -18,6 +18,12 @@ try {
     $stmt = $conn->prepare("SELECT * FROM Time_Entry WHERE SR_Service_RecID = :id ORDER BY Last_Update DESC");
     $stmt->execute(['id' => $ticket_id]);
     $time_entries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
+	// Fetch notes and email history
+	$sql = "SELECT * FROM SR_Detail WHERE SR_Service_RecID = :ticketId ORDER BY Date_Created_UTC DESC";
+	$stmt = $conn->prepare($sql);
+	$stmt->execute(['ticketId' => $ticket_id]);
+	$notes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
 } catch(PDOException $e) {
     die("Database error: " . $e->getMessage());
@@ -29,7 +35,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket Details - <?php $ticket['TicketNbr'] ?></title>
+    <title>Ticket Details - <?php echo $ticket['TicketNbr'] ?></title>
     <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -72,14 +78,13 @@ try {
                     <a class="btn btn-danger navbar-btn" href="/logout.php">Logout</a>
                 </li>
             </ul>
-			<h3 class="ml-auto">Summary: "<?php echo htmlspecialchars($ticket['Summary']); ?>" Status: "<?php echo htmlspecialchars($ticket['status_description']); ?>"</h3>
+			<h5 class="ml-auto">Ticket# <?php echo $ticket['TicketNbr'] ?>| Summary: "<?php echo htmlspecialchars($ticket['Summary']); ?>" Status: "<?php echo htmlspecialchars($ticket['status_description']); ?>"</h5>
         </div>
 	</nav>
     <div class="mainBody">
 	<div class="container">
         <div class="info-container row">
             <div class="col-sm-6">
-                <h3>Company Information</h3>
                 <p><b>Company: </b><?php echo htmlspecialchars($ticket['Company_Name']); ?></p>
                 <p><b>Address: </b><?php echo htmlspecialchars($ticket['Address_Line1']); ?></p>
                 <p><b>Contact: </b><?php echo htmlspecialchars($ticket['Contact_Name']); ?></p>
@@ -91,7 +96,6 @@ try {
                 <p><b>Resource List: </b><?php echo htmlspecialchars($ticket['resource_list']); ?></p>
             </div>
             <div class="col-sm-6">
-                <h3>Ticket Information</h3>
                 <p><b>Board: </b><?php echo htmlspecialchars($ticket['Board_Name']); ?></p>
                 <p><b>Service Type: </b><?php echo htmlspecialchars($ticket['ServiceType']); ?></p>
                 <p><b>Date Entered: </b><?php echo htmlspecialchars($ticket['date_entered']); ?></p>
@@ -120,13 +124,29 @@ try {
                     <?php endforeach; ?>
                 </div>
             </div>
-            <div class="col-sm-6">
-                <!-- Placeholder for future notes -->
-            </div>
+			<div class="col-md-6 overflow-auto">
+				<h3 class="mt-3">Notes/Email History</h3>
+				<div class="scrollable">
+				<?php foreach($notes as $note): ?>
+					<div class="card mb-3">
+						<div class="card-header">
+							Created by <?php echo htmlspecialchars($note['Created_By']); ?> on <?php echo htmlspecialchars($note['Date_Created_UTC']); ?>
+						</div>
+						<div class="card-body">
+							<p><?php echo nl2br(htmlspecialchars($note['SR_Detail_Notes_Markdown'])); ?></p>
+						</div>
+						<div class="card-footer">
+							Updated by <?php echo htmlspecialchars($note['Updated_By']); ?> on <?php echo htmlspecialchars($note['Last_Update_UTC']); ?>
+						</div>
+					</div>
+				<?php endforeach; ?>
+				</div>
+			</div>
         </div>
     </div>
     <!-- Include Bootstrap JavaScript -->
 	</div>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

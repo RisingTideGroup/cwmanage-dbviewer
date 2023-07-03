@@ -26,5 +26,15 @@ try {
 
 $title = "List Tickets";
 
+
 include 'grid_view.php';
 ?>
+
+<script>
+  // Add the onRowClicked event for this specific page
+  gridOptions.onRowClicked = function(event) {
+    var data = event.data;
+    window.location.href = "ticket_details.php?ticket_id=" + data['TicketNbr'];
+  };
+</script>
+

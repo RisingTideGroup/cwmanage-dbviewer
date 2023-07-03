@@ -16,12 +16,15 @@ try {
 }
 
 $title = "List Customers";
-$columns = ['c.Company_RecID', 'c.Company_Name', 'c.PhoneNbr', 'c.Last_Update', 'cs.Description', 'c.Date_Entered'];
-foreach ($result as $key => $value) {
-    $result[$key]['Company_Name'] = '<a href="tickets.php?companyid=' . $value['Company_RecID'] . '">' . $value['Company_Name'] . '</a>';
-}
-
-
+//$columns = ['c.Company_RecID', 'c.Company_Name', 'c.PhoneNbr', 'c.Last_Update', 'cs.Description', 'c.Date_Entered'];
 
 include 'grid_view.php';
 ?>
+
+<script>
+  // Add the onRowClicked event for this specific page
+  gridOptions.onRowClicked = function(event) {
+    var data = event.data;
+    window.location.href = "tickets.php?companyid=" + data['Company_RecID'];
+  };
+</script>
