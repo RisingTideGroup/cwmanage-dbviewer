@@ -3,7 +3,7 @@
 <head>
     <title>CWM - Database Viewer -<?php echo $title;?></title>
     <!-- Include Bootstrap CSS for styling. You can replace this with your own styles if you want. -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <!-- Include the JS for AG Grid -->
     <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
     <!-- Include the core CSS, this is needed by the grid -->
@@ -12,32 +12,51 @@
     <!-- Include the theme CSS, only need to import the theme you are going to use -->
     <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css"/>
+<style>
+    .nav-item.active {
+        background-color: #007BFF;  /* Change as per your needs */
+    }
+    .nav-item.active .nav-link {
+        color: white;
+    }
+</style>
+
+
   </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/index.php">Home</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'customers.php') echo 'active'; ?>">
-                    <a class="nav-link" href="/customers.php">Customers</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+	<div class="container-fluid">
+    <a class="navbar-brand px-3 text-light" href="/index.php">Home</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'customers.php') echo 'active'; ?>">
+                <a class="nav-link text-light" href="/customers.php">Customers</a>
+            </li>
+            <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'tickets.php') echo 'active'; ?>">
+                <a class="nav-link text-light" href="/tickets.php">Tickets</a>
+            </li>
+		</ul>
+		<ul class="navbar-nav ms-auto d-flex align-items-center">
+		        <li class="nav-item me-3">
+					<a class="btn btn-warning" href="#" data-bs-toggle="modal" data-bs-target="#ticketModal">Launch Ticket#</a>
+				</li>
+				<li class="nav-item">
+					<form class="d-flex my-2 my-lg-0 me-3">
+					<input class="form-control mr-sm-2" type="search" placeholder="Filter..." aria-label="Filter" oninput="onFilterTextBoxChanged()" id="filter-text-box">
+					</form>
+				</li>
+                <li class="nav-item">
+                    <a class="btn btn-danger" href="/logout.php">Logout</a>
                 </li>
-                <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'tickets.php') echo 'active'; ?>">
-                    <a class="nav-link" href="/tickets.php">Tickets</a>
-                </li>
-				<li class="nav-item ">
-                    <a class="btn btn-danger navbar-btn" href="/logout.php">Logout</a>
-                </li>
-            </ul>
-			<form class="form-inline ml-auto my-2 my-lg-0">
-				<input class="form-control mr-sm-2" type="search" placeholder="Filter..." aria-label="Filter" oninput="onFilterTextBoxChanged()" id="filter-text-box">
-			</form>
-        </div>
-	</nav>
+        </ul>
+    </div>
+	</div>
+</nav>
+
     <div class="container-fluid my-4">
         <h1 class="mb-4">
             <?php
             echo $title;
-			echo $route;
             ?>
         </h1>
         <!-- Check if there's any error -->
@@ -58,8 +77,59 @@
         <?php endif; ?>
     </div>
 	
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<!-- Modal for entering ticket number -->
+	<div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="ticketModalLabel">Launch Ticket by ID</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			  <div class="mb-3">
+				<label for="ticketNumber" class="form-label">Ticket Number:</label>
+				<input type="text" class="form-control" id="ticketNumber" name="ticket_id" placeholder="Enter ticket number" required>
+			  </div>
+			  <button type="button" class="close btn btn-primary" data-bs-dismiss="modal" onClick="launchTicketDetails()">Open Ticket</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	
+	<style>
+ .modal-lg {
+  max-width: 80vw !important;
+  height: 95vh;
+}
+
+ .modal-content {
+  height: 100%;
+}
+
+#ticketDetailsFrame {
+  width: 100%;
+  height: 100%;
+}
+</style>
+
+<div class="modal fade" id="ticketDetailsModal" tabindex="-1" aria-labelledby="ticketDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ticketDetailsModalLabel">Ticket Details</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe id="ticketDetailsFrame" src="" width="100%" height="500px"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+		
+<script src="https://code.jquery.com/jquery-3.7.0.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <script>
     // Specify column definitions for AG Grid
     var columnDefs = [
@@ -104,6 +174,9 @@
             resizable: true,
         },
         detailCellRenderer: detailCellRenderer,
+		pagination: true,
+		rowSelection: 'multiple',
+		rowGroupPanelShow: 'always',		
         onFirstDataRendered: function (params) {
             params.api.sizeColumnsToFit();
         }
@@ -118,6 +191,15 @@
 	function onFilterTextBoxChanged() {
 		gridOptions.api.setQuickFilter(document.getElementById('filter-text-box').value);
 	}
+
+	function launchTicketDetails() {
+		var ticketId = document.getElementById('ticketNumber').value;
+		var url = "ticket_details.php?ticket_id=" + ticketId;
+		$('#ticketDetailsFrame').attr('src', url);
+		//$('#ticketDetailsModalLabel')[0].innerText = 'Ticket # ' + data['TicketNbr'] + ' | Summary: "' + data['Summary'] + '" | Status: "' + data['status_description'] + '"'
+		$('#ticketDetailsModal').modal('show');
+
+	};
 
 </script>
 </body>

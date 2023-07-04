@@ -75,7 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <!-- Include Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    
     <style>
         .mainBody {
             display: flex;
@@ -95,30 +96,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 	<?php if ($isDbConnected): ?>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/index.php">Home</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'customers.php') echo 'active'; ?>">
-                    <a class="nav-link" href="/customers.php">Customers</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-primary">
+	<div class="container-fluid">
+    <a class="navbar-brand px-3 text-light" href="/index.php">Home</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'customers.php') echo 'active'; ?>">
+                <a class="nav-link text-light" href="/customers.php">Customers</a>
+            </li>
+            <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'tickets.php') echo 'active'; ?>">
+                <a class="nav-link text-light" href="/tickets.php">Tickets</a>
+            </li>
+		</ul>
+		<ul class="navbar-nav ms-auto d-flex align-items-center">
+                <li class="nav-item">
+                    <a class="btn btn-danger" href="/logout.php">Logout</a>
                 </li>
-                <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'tickets.php') echo 'active'; ?>">
-                    <a class="nav-link" href="/tickets.php">Tickets</a>
-                </li>
-				<li class="nav-item ">
-                    <a class="btn btn-danger navbar-btn" href="/logout.php">Logout</a>
-                </li>
-            </ul>
-        </div>
-	</nav>
+        </ul>
+    </div>
+	</div>
+</nav>
+
 	<?php endif; ?>
     <div class="mainBody">
         <div class="container">
             <h1 class="title">ConnectWise Manage Database Archive Viewer</h1>
             <?php if ($isDbConnected): ?>
 			<h6 class="status alert alert-success" role="alert">
-				<!-- file deepcode ignore PrivacyLeak: no risk. -->
-    Connected to SQL Server: <?= $serverName ?>, Database: <?= $database ?>, Version: <?= $dbVersion ?>
+				Connected to SQL Server: <?= $serverName ?>, Database: <?= $database ?>, Version: <?= $dbVersion ?>
 			</h6>
                 <div class="row">
                     <div class="col-sm-4">
@@ -142,9 +147,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php else: ?>
                 <form method="POST" action="index.php">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="saved_settings">Server and Database Settings</label>
-                        <select class="form-control" name="saved_settings" onchange="handleSelection()">
+                        <select class="form-control" name="saved_settings">
                             <option value="">Select a server option...</option>
 							<option value="newServer">Other Server</option>
                             <?php foreach ($savedSettings as $index => $settings): ?>
@@ -153,24 +158,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </select>
                     </div>
 					<div class="newServerSettings">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="hostname">Hostname</label>
                         <input type="text" class="form-control" id="hostname" name="hostname">
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="dbname">Database Name</label>
                         <input type="text" class="form-control" id="dbname" name="dbname">
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="username">Username</label>
                         <input type="text" class="form-control" id="username" name="username">
                     </div>
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="password">Password</label>
                         <input type="password" class="form-control" id="password" name="password">
                     </div>
 					
-                    <div class="form-group form-check">
+                    <div class="mb-3 form-check-inline">
                         <input type="checkbox" class="form-check-input" id="save_settings" name="save_settings">
                         <label class="form-check-label" for="save_settings">Save settings for future use</label>
                     </div>
@@ -182,8 +187,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Include Bootstrap JS -->
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.0.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 	<script>
 	        $(document).ready(function() {
 				$('.newServerSettings').hide();

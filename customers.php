@@ -2,7 +2,7 @@
 include 'database.php';
 
 try {
-    $sql = "SELECT c.Company_RecID, c.Company_Name, c.PhoneNbr, c.Last_Update, cs.Description, c.Date_Entered
+    $sql = "SELECT c.Company_RecID, c.Company_Name as [Name], c.PhoneNbr as [Phone#], c.Last_Update as [Last Updated], cs.Description as [Status], c.Date_Entered as [Date Added]
             FROM Company c
 	    JOIN Company_Status cs on c.Company_Status_RecID = cs.Company_Status_RecID
             WHERE Delete_Flag = 0";
@@ -15,9 +15,10 @@ try {
     echo "Get Failed: " . $e->getMessage();
 }
 
-$title = "List Customers";
-//$columns = ['c.Company_RecID', 'c.Company_Name', 'c.PhoneNbr', 'c.Last_Update', 'cs.Description', 'c.Date_Entered'];
-
+	if ($title === null) {
+		$title = "List Customers";
+	}
+	
 include 'grid_view.php';
 ?>
 
