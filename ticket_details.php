@@ -91,15 +91,16 @@ ORDER BY Date_Created_UTC DESC";
         .mainBody {
             display: flex;
             justify-content: center;
-            align-items: center;
+			#padding-top: 20px;
+            #align-items: center;
 			min-height: 100%;
-            background: #f8f9fa;
+            
         }
         .card {
             margin: 20px;
         }
         .scrollable {
-            height: 400px;
+            #height: 400px;
             overflow-y: auto;
         }
 		
@@ -150,7 +151,7 @@ ORDER BY Date_Created_UTC DESC";
 	<li class="nav-item"><button class="nav-link active" onclick="openTab(event, 'notesEmails')">Notes/Email History</button></li>
     <li class="nav-item"><button class="nav-link" onclick="openTab(event, 'timeEntries')">Time Entries</button></li>
   </ul>
-        <div class="row">
+        <div class="row" style="background: #f8f9fa;">
             <div id="timeEntries" class="tab-content overflow-auto">
                 <div class="scrollable">
                     <?php foreach ($time_entries as $entry): ?>
