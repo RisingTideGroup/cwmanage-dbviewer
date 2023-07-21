@@ -24,8 +24,6 @@ try {
     $time_entries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	
 	// Fetch notes and email history
-	$sql = "SELECT * FROM SR_Detail srd
-	WHERE srd.SR_Service_RecID = :ticketId ORDER BY Date_Created_UTC DESC";
 	$notesSql = "SELECT sr.SR_Detail_RecID AS RecID,
 	   sr.SR_Service_RecID,
 	   sr.SR_Detail_Notes_Markdown AS Notes,
@@ -38,7 +36,11 @@ try {
 	   sr.Date_Created_UTC,
 	   sr.Created_By,
 	   sr.Last_Update_UTC,
-	   sr.Updated_By
+	   sr.Updated_By,
+	   NULL AS work_role, 
+	   NULL AS work_type,
+	   0 as Billable_Hrs,
+	   0 as NonBillable_Hrs
 FROM dbo.SR_Detail sr 
 where sr.SR_Service_RecID = :ticketId
 UNION ALL
@@ -54,11 +56,21 @@ SELECT te.Time_RecID AS RecID,
 	   te.Date_Entered_UTC AS Date_Created_UTC,
 	   te.Entered_By AS Created_By,
 	   te.Last_Update_UTC,
-	   te.Updated_By
+	   te.Updated_By,
+	   ac.[description] AS work_role, 
+	   act.[description] AS work_type,
+	   (te.Hours_Invoiced * te.billable_flag) AS Billable_Hrs,
+	   	CASE te.billable_flag
+		WHEN 0 THEN te.Hours_Invoiced
+		ELSE 0
+		END AS NonBillable_Hrs
+
 FROM dbo.Time_Entry te
+LEFT JOIN dbo.activity_class ac ON ac.activity_class_recid = te.activity_class_recid 
+LEFT JOIN dbo.activity_type act ON act.activity_type_recid = te.activity_type_recid
 WHERE (te.TE_Problem_Flag = 1 OR te.TE_InternalAnalysis_Flag = 1 OR te.TE_Resolution_Flag = 1)
 and te.SR_Service_RecID = :tickId
-ORDER BY Date_Created_UTC DESC";
+ORDER BY Date_Created_UTC DESC;";
 	$stmt = $conn->prepare($notesSql);
 	$stmt->bindValue(':ticketId', $ticket_id);
 	$stmt->bindValue(':tickId', $ticket_id);
@@ -81,7 +93,8 @@ ORDER BY Date_Created_UTC DESC";
     <!-- Include Bootstrap CSS -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <style>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+	<style>
 	
 		html, body {
 			min-height: 100%;
@@ -158,6 +171,9 @@ ORDER BY Date_Created_UTC DESC";
                         <div class="card">
                             <div class="card-header">
                                 Entered By: <?php echo htmlspecialchars($entry['Entered_By']); ?>, Last Updated: <?php echo htmlspecialchars($entry['Last_Update']); ?>
+							<?php if($entry['Time_Flag'] == 1): ?>
+								<b>Billable: </b><?php echo $entry['Billable_Hrs']; ?><b> | Non-Billable: </b><?php echo $entry['NonBillable_Hrs']; ?><b> | Type:</b> <?php echo $entry['work_type']; ?><b> | Role:</b> <?php echo $entry['work_role']; ?>
+							<?php endif; ?>
                             </div>
 						<div class="card-body time-<?php echo $entry['Time_RecID']; ?>">
 							
@@ -175,24 +191,61 @@ ORDER BY Date_Created_UTC DESC";
             </div>
 			<div id="notesEmails" class="tab-content overflow-auto active">
 				<div class="scrollable">
-				<?php foreach($notes as $note): ?>
-					<div class="card mb-3">
-						<div class="card-header">
-							Entered by <?php echo htmlspecialchars($note['Created_By']); ?>, Last Updated <?php echo htmlspecialchars($note['Last_Update_UTC']); ?>
-						</div>
-						<div class="card-body notes-<?php echo $note['RecID']; ?>">			
-							<script>
-							document.addEventListener('DOMContentLoaded', function() {
-								var markdown = <?php echo json_encode($note['Notes']); ?>;
-								var converter = new showdown.Converter();
-								var html = converter.makeHtml(markdown);
-								var cardBody = document.querySelector('.notes-<?php echo $note['RecID']; ?>');
-								cardBody.innerHTML = html;
-							});
-							</script>
-						</div>
+			<?php foreach($notes as $note): ?>
+				<div class="card mb-3">
+					<div class="card-header">
+						<span class="
+						<?php
+							if(isset($note['Member_RecID'])) {
+								if($note['Detail_Description_Flag']) {
+									echo "badge bg-secondary text-white";
+								} elseif($note['Internal_Analysis_Flag']) {
+									echo "badge bg-primary text-white";
+								} elseif($note['Resolution_Flag']) {
+									echo "badge bg-success text-white";
+								}
+							} else {
+								echo "badge bg-info text-dark";
+							}
+						?>
+						">
+						<?php if($note['Time_Flag']): ?>
+							<i class="fas fa-clock"></i> 
+						<?php endif; ?>
+							<?php
+								if(isset($note['Member_RecID'])) {
+									if($note['Detail_Description_Flag']) {
+										echo "Discussion";
+									} elseif($note['Internal_Analysis_Flag']) {
+										echo "Internal";
+									} elseif($note['Resolution_Flag']) {
+										echo "Resolution";
+									} 
+								} else {
+									echo "Customer Email";
+								}
+							?>
+
+						</span>
+						Entered by <?php echo htmlspecialchars($note['Created_By']); ?>, Last Updated <?php echo htmlspecialchars($note['Last_Update_UTC']); ?>
+						    <?php if($note['Time_Flag'] == 1): ?>
+								<b>Billable: </b><?php echo $note['Billable_Hrs']; ?><b> | Non-Billable: </b><?php echo $note['NonBillable_Hrs']; ?><b> | Type:</b> <?php echo $note['work_type']; ?><b> | Role:</b> <?php echo $note['work_role']; ?>
+							<?php endif; ?>
 					</div>
-				<?php endforeach; ?>
+					<div class="card-body notes-<?php echo $note['RecID']; ?>">            
+						<script>
+						document.addEventListener('DOMContentLoaded', function() {
+							var markdown = <?php echo json_encode($note['Notes']); ?>;
+							var converter = new showdown.Converter();
+							var html = converter.makeHtml(markdown);
+							var cardBody = document.querySelector('.notes-<?php echo $note['RecID']; ?>');
+							cardBody.innerHTML = html;
+						});
+						</script>
+					</div>
+				</div>
+			<?php endforeach; ?>
+
 				</div>
 			</div>
         </div>
