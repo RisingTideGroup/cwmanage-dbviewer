@@ -1,17 +1,13 @@
 <?php
 include 'database.php';
 
-	$sql = "SELECT TicketNbr as [Ticket#], status_description as [Status], Summary as [Title], Company_Name as [Company], Contact_Name as [User], Board_Name as [Board], agreement_name as [Agreement], date_entered as [Date Created], date_closed as [Date Closed]
-FROM v_rpt_Service_Summary";
+	$sql = "SELECT PM_Project_RecID as [Project#],Project_Name, Project_Manager as [Manager], Project_Type as [Type], Project_Status as [Status], Notes, [Estimated_Start_Date], [Estimated_End_Date], [Percent_Complete], [Hours_Actual], Hours_Budget, [Hours_Billable]
+          FROM v_rpt_ProjectHeader";
+
 
 	if (isset($_GET['companyid'])) {
 		// Add a WHERE clause to the SQL query
 		$sql .= " WHERE Company_RecID = :companyid";
-	}
-	
-		if (isset($_GET['userid'])) {
-		// Add to the WHERE clause to the SQL query
-		$sql .= " AND contact_recid = :userid";
 	}
 
 try {
@@ -20,17 +16,13 @@ try {
     if (isset($_GET['companyid'])) {
         $stmt->bindParam(':companyid', $_GET['companyid']);
     
-		if (isset($_GET['userid'])) {
-			// Add a WHERE clause to the SQL query
-			$stmt->bindParam(':userid', $_GET['userid']);
-		}
 	
     $stmt->execute();
     
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	
 	if ($title === null) {
-		$title = "List Tickets";
+		$title = "List Projects";
 	}
 
 
@@ -50,9 +42,9 @@ try {
   // Add the onRowClicked event for this specific page
   gridOptions.onRowClicked = function(event) {
     var data = event.data;
-    var url = "ticket_details.php?ticket_id=" + data['Ticket#'];
+    var url = "phases.php?project_id=" + data['Project#'];
 	$('#ticketDetailsFrame').attr('src', url);
-	$('#ticketDetailsModalLabel')[0].innerText = 'Ticket # ' + data['Ticket#'] + ' | Summary: "' + data['Title'] + '" | Status: "' + data['Status'] + '"'
+	$('#ticketDetailsModalLabel')[0].innerText = 'Project # ' + data['Project#'] + ' | Summary: "' + data['Project_Name'] + '" | Status: "' + data['Status'] + '"'
 	$('#ticketDetailsModal').modal('show');
 	
   };

@@ -8,11 +8,6 @@ FROM v_rpt_Service_Summary";
 		// Add a WHERE clause to the SQL query
 		$sql .= " WHERE Company_RecID = :companyid";
 	}
-	
-		if (isset($_GET['userid'])) {
-		// Add to the WHERE clause to the SQL query
-		$sql .= " AND contact_recid = :userid";
-	}
 
 try {
     $stmt = $conn->prepare($sql);
@@ -20,10 +15,6 @@ try {
     if (isset($_GET['companyid'])) {
         $stmt->bindParam(':companyid', $_GET['companyid']);
     
-		if (isset($_GET['userid'])) {
-			// Add a WHERE clause to the SQL query
-			$stmt->bindParam(':userid', $_GET['userid']);
-		}
 	
     $stmt->execute();
     

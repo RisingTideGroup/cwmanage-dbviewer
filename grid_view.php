@@ -20,10 +20,36 @@
         color: white;
     }
 </style>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var links = document.querySelectorAll('.custom-link');
+
+		links.forEach(function(link) {
+			link.addEventListener('click', function(event) {
+				// Prevent the default link behavior
+				event.preventDefault();
+
+				// Get the base URL from the href attribute
+				var baseUrl = event.target.getAttribute('href');
+
+				// Get the current query parameters
+				var queryParams = new URLSearchParams(window.location.search);
+
+				// Combine the base URL and query parameters
+				var newUrl = baseUrl + "?" + queryParams.toString();
+
+				// Navigate to the new URL
+				window.location.href = newUrl;
+			});
+		});
+	});
+
+</script>
 
 
   </head>
 <body>
+<?php if ($title != 'List Phases and Tickets'): ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-primary">
 	<div class="container-fluid">
     <a class="navbar-brand px-3 text-light" href="/index.php">Home</a>
@@ -32,8 +58,14 @@
             <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'customers.php') echo 'active'; ?>">
                 <a class="nav-link text-light" href="/customers.php">Customers</a>
             </li>
+	       <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'users.php') echo 'active'; ?>">
+                <a class="custom-link nav-link text-light" href="/users.php">Users</a>
+            </li>
             <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'tickets.php') echo 'active'; ?>">
-                <a class="nav-link text-light" href="/tickets.php">Tickets</a>
+                <a class="custom-link nav-link text-light" href="/tickets.php">Tickets</a>
+            </li>
+            <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'projects.php') echo 'active'; ?>">
+                <a class="custom-link nav-link text-light" href="/projects.php">Projects</a>
             </li>
 		</ul>
 		<ul class="navbar-nav ms-auto d-flex align-items-center">
@@ -52,7 +84,7 @@
     </div>
 	</div>
 </nav>
-
+<?php endif; ?>
     <div class="container-fluid my-4">
         <h1 class="mb-4">
             <?php
@@ -200,6 +232,8 @@
 		$('#ticketDetailsModal').modal('show');
 
 	};
+	
+	
 
 </script>
 </body>

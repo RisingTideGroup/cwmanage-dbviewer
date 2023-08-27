@@ -66,6 +66,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+if (isset($_GET['companyid'])) {
+		$sql = "SELECT Company_Name from Company WHERE Company_RecID = :id";
+		$stmt = $conn->prepare($sql);
+		$stmt->bindValue(':id', $_GET['companyid']);
+		$stmt->execute();
+		$CustomerName = $stmt->fetch(PDO::FETCH_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
@@ -93,6 +101,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 50px;
         }
     </style>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+		var links = document.querySelectorAll('.custom-link');
+
+		links.forEach(function(link) {
+			link.addEventListener('click', function(event) {
+				// Prevent the default link behavior
+				event.preventDefault();
+
+				// Get the base URL from the href attribute
+				var baseUrl = event.target.getAttribute('href');
+
+				// Get the current query parameters
+				var queryParams = new URLSearchParams(window.location.search);
+
+				// Combine the base URL and query parameters
+				var newUrl = baseUrl + "?" + queryParams.toString();
+
+				// Navigate to the new URL
+				window.location.href = newUrl;
+			});
+		});
+	});
+	</script>
 </head>
 <body>
 	<?php if ($isDbConnected): ?>
@@ -105,7 +138,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a class="nav-link text-light" href="/customers.php">Customers</a>
             </li>
             <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'tickets.php') echo 'active'; ?>">
-                <a class="nav-link text-light" href="/tickets.php">Tickets</a>
+                <a class="custom-link nav-link text-light" href="/users.php">Users</a>
+            </li>
+            <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'tickets.php') echo 'active'; ?>">
+                <a class="custom-link nav-link text-light" href="/tickets.php">Tickets</a>
+            </li>
+            <li class="nav-item <?php if (basename($_SERVER['PHP_SELF']) == 'projects.php') echo 'active'; ?>">
+                <a class="custom-link nav-link text-light" href="/projects.php">Projects</a>
             </li>
 		</ul>
 		<ul class="navbar-nav ms-auto d-flex align-items-center">
@@ -121,6 +160,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="mainBody">
         <div class="container">
             <h1 class="title">ConnectWise Manage Database Archive Viewer</h1>
+			<?php if (isset($CustomerName)): ?>
+			<h2 class="title" style="color: blue;">Customer: <?php echo $CustomerName['Company_Name'] ?></h2>
+			<?php endif; ?>
             <?php if ($isDbConnected): ?>
 			<h6 class="status alert alert-success" role="alert">
 				Connected to SQL Server: <?= $serverName ?>, Database: <?= $database ?>, Version: <?= $dbVersion ?>
@@ -129,9 +171,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="col-sm-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Clients</h5>
-                                <p class="card-text">View  clients</p>
-                                <a href="customers.php" class="btn btn-primary">Go to Clients</a>
+                                <h5 class="card-title"><?php if (isset($CustomerName)): ?>Users<?php else: ?>Clients<?php endif; ?></h5>
+                                <p class="card-text">View  <?php if (isset($CustomerName)): ?>Users<?php else: ?>Clients<?php endif; ?></p>
+                                <a <?php if (isset($CustomerName)): ?>href="users.php?companyid=<?php echo $_GET['companyid'] ?>"<?php else: ?>href="customers.php"<?php endif; ?> class="btn btn-primary">Go to <?php if (isset($CustomerName)): ?>Users<?php else: ?>Clients<?php endif; ?></a>
                             </div>
                         </div>
                     </div>
@@ -140,7 +182,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="card-body">
                                 <h5 class="card-title">Tickets</h5>
                                 <p class="card-text">View  tickets</p>
-                                <a href="tickets.php" class="btn btn-primary">Go to Tickets</a>
+                                <a href="tickets.php" class="custom-link btn btn-primary">Go to Tickets</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Projects</h5>
+                                <p class="card-text">View  Projects</p>
+                                <a href="projects.php" class="custom-link btn btn-primary">Go to Projects</a>
                             </div>
                         </div>
                     </div>
