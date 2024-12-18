@@ -174,6 +174,7 @@
 
     // Specify row data for AG Grid
     let rowData = <?php echo json_encode($result, JSON_HEX_TAG); ?>;
+    let gridApi;
 
 
     // specify the detail cell renderer
@@ -217,11 +218,11 @@
     // setup the grid after the page has finished loading 
     document.addEventListener('DOMContentLoaded', function() {
         var gridDiv = document.querySelector('#myGrid');
-        const gridApi = agGrid.createGrid(gridDiv, gridOptions);
+        gridApi = agGrid.createGrid(gridDiv, gridOptions);
     });
 	
 	function onFilterTextBoxChanged() {
-		gridOptions.api.setQuickFilter(document.getElementById('filter-text-box').value);
+		gridApi.setGridOption('quickFilterText': (document.getElementById('filter-text-box').value));
 	}
 
 	function launchTicketDetails() {
