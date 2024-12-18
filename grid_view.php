@@ -5,13 +5,7 @@
     <!-- Include Bootstrap CSS for styling. You can replace this with your own styles if you want. -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <!-- Include the JS for AG Grid -->
-    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.noStyle.js"></script>
-    <!-- Include the core CSS, this is needed by the grid -->
-    <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css"/>
-    <!-- Include the theme CSS, only need to import the theme you are going to use -->
-    <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
 <style>
     .nav-item.active {
         background-color: #007BFF;  /* Change as per your needs */
@@ -208,8 +202,7 @@
         },
         detailCellRenderer: detailCellRenderer,
 		pagination: true,
-		rowSelection: 'multiple',
-		rowGroupPanelShow: 'always',		
+		rowSelection: { mode: 'multiRow' },
         onFirstDataRendered: function (params) {
             params.api.sizeColumnsToFit();
         }
