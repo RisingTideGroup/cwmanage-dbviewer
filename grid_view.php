@@ -215,7 +215,7 @@
     });
 	
 	function onFilterTextBoxChanged() {
-		gridApi.setGridOption('quickFilterText': (document.getElementById('filter-text-box').value));
+		gridApi.setGridOption('quickFilterText', (document.getElementById('filter-text-box').value));
 	}
 
 	function launchTicketDetails() {
