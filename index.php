@@ -18,6 +18,7 @@ if ($serverName && $database && $username && $password) {
         $isDbConnected = true;
     } catch(PDOException $e) {
         // Connection failed, show form
+        $dbErrorMessage = $e->getMessage();	    
     }
 }
 
@@ -160,10 +161,15 @@ if (isset($_GET['companyid'])) {
     <div class="mainBody">
         <div class="container">
             <h1 class="title">ConnectWise Manage Database Archive Viewer</h1>
-			<?php if (isset($CustomerName)): ?>
+		<?php if ($dbErrorMessage): ?>
+			<div class="alert alert-danger" role="alert">
+			        Database connection failed: <?= htmlspecialchars($dbErrorMessage, ENT_QUOTES, 'UTF-8') ?>
+    			</div>
+		<?php endif; ?>
+		<?php if (isset($CustomerName)): ?>
 			<h2 class="title" style="color: blue;">Customer: <?php echo $CustomerName['Company_Name'] ?></h2>
-			<?php endif; ?>
-            <?php if ($isDbConnected): ?>
+		<?php endif; ?>
+            	<?php if ($isDbConnected): ?>
 			<h6 class="status alert alert-success" role="alert">
 				Connected to SQL Server: <?= $serverName ?>, Database: <?= $database ?>, Version: <?= $dbVersion ?>
 			</h6>
