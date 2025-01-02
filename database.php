@@ -12,7 +12,8 @@ $username = $_SESSION['username'];
 $password = $_SESSION['password'];
 
 try {
-    $conn = new PDO("sqlsrv:server=$serverName;Database=$database", $username, $password);
+    $encodedPassword = rawurlencode($password);
+    $conn = new PDO("sqlsrv:server=$serverName;Database=$database", $username, $encodedPassword);
     // set the PDO error mode to exception
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
