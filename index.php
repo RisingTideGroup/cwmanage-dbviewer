@@ -9,7 +9,7 @@ $password = $_SESSION['password'] ?? null;
 $isDbConnected = false;
 if ($serverName && $database && $username && $password) {
     try {
-	$encodedPassword = rawurlencode($password);
+	$encodedPassword = addcslashes($password, '{}');
         $conn = new PDO("sqlsrv:server=$serverName;Database=$database", $username, $encodedPassword);
         // set the PDO error mode to exception
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
