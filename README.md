@@ -21,9 +21,13 @@ Make sure you use SQL Server Authentication for this
  1. Install IIS features, including CGI which will also install FastCGI
  2. Extract this repo and mount it in IIS, ensuring IUSR has modify rights
  3. Download PHP 8.2.x - make sure to get Non Thread Safe ZIP file download
- 4. Install PHP Manager from https://docs.lextudio.com/phpmanager/getting-started/installation.html
+ 4. [Install PHP Manager](https://docs.lextudio.com/phpmanager/getting-started/installation.html)
  5. Extract contents to C:\PHP and register it on the website
- 6. Download the PHP MSSQL Driver package and extract it
- 7. Copy the driver file for NTS php 8.2 for the architecture you installed into the ext folder where you extracted PHP
- 8. Enable the extension using PHP Manager and run IIS Reset
- 9. Setup a RO SQL User and connect to the website
+ 6. [Download the PHP MSSQL Driver package and extract it](https://learn.microsoft.com/en-us/sql/connect/php/download-drivers-php-sql-server?view=sql-server-ver16)
+ 
+### 💡 Tip
+> Make sure you use the PDO Driver for the NTS PHP version you installed, for the architecture you installed. This is called out in the name of the file.
+
+ 7. Copy the PDO driver file for NTS php 8.2 for the architecture you installed into the ext folder where you extracted PHP
+ 9. Enable the extension using PHP Manager and run IIS Reset
+ 10. Setup a RO SQL User and connect to the website
