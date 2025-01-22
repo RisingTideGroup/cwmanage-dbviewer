@@ -5,12 +5,12 @@ $serverName = $_SESSION['hostname'] ?? null;
 $database = $_SESSION['dbname'] ?? null;
 $username = $_SESSION['username'] ?? null;
 $password = $_SESSION['password'] ?? null;
+$ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? null;
 
 $isDbConnected = false;
 if ($serverName && $database && $username && $password) {
     try {
 	$encodedPassword = addcslashes($password, '{}');
-        $ignoreTrust = isset($_POST['ignore_trust']) && $_POST['ignore_trust'] === 'on';
         $connectionOptions = "sqlsrv:server=$serverName;Database=$database;";
         if ($ignoreTrust) {
             $connectionOptions .= "Encrypt=true;TrustServerCertificate=true;";
