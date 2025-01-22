@@ -12,7 +12,8 @@ $ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? false;
 $isIgnoreTrust = filter_var($ignoreTrust, FILTER_VALIDATE_BOOLEAN);
 
 $isDbConnected = false;
-$dbErrorMessage = null; // Initialize error message
+// Read the error message from the query parameter if there is one.
+$dbErrorMessage = $_GET['message'] ?? null;
 
 if ($serverName && $database && $username && $password) {
     try {
