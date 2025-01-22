@@ -5,23 +5,29 @@ $serverName = $_SESSION['hostname'] ?? null;
 $database = $_SESSION['dbname'] ?? null;
 $username = $_SESSION['username'] ?? null;
 $password = $_SESSION['password'] ?? null;
-$ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? null;
+$ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? false;
+
+
+// Ensure `$ignoreTrust` is a proper boolean
+$isIgnoreTrust = filter_var($ignoreTrust, FILTER_VALIDATE_BOOLEAN);
 
 $isDbConnected = false;
+$dbErrorMessage = null; // Initialize error message
+
 if ($serverName && $database && $username && $password) {
     try {
 	$encodedPassword = addcslashes($password, '{}');
-        $connectionOptions = "sqlsrv:server=$serverName;Database=$database;";
-        if ($ignoreTrust) {
-            $connectionOptions .= "Encrypt=true;TrustServerCertificate=true;";
-        } else {
-            $connectionOptions .= "Encrypt=true;";
-        }	    
-        $conn = new PDO($connectionOptions, $username, $encodedPassword);
+
+	$options = [
+    	  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    	  PDO::SQLSRV_ATTR_ENCRYPT => true,
+    	  PDO::SQLSRV_ATTR_TRUST_SERVER_CERTIFICATE => $isIgnoreTrust
+	];
+        $conn = new PDO("sqlsrv:server=$serverName;Database=$database;", $username, $encodedPassword, $options);
         // set the PDO error mode to exception
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		
-		$stmt = $conn->query("Select Message FROM System_Table where Description = 'display_version'");
+	$stmt = $conn->query("Select Message FROM System_Table where Description = 'display_version'");
         $dbVersion = $stmt->fetchColumn();
         $isDbConnected = true;
     } catch(PDOException $e) {
