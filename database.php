@@ -10,9 +10,19 @@ $serverName = $_SESSION['hostname'];
 $database = $_SESSION['dbname'];
 $username = $_SESSION['username'];
 $password = $_SESSION['password'];
+$ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? null;
+
 
 try {
     $encodedPassword = addcslashes($password, '{}');
+	
+	$connectionOptions = "sqlsrv:server=$serverName;Database=$database;";
+        if ($ignoreTrust) {
+            $connectionOptions .= "Encrypt=true;TrustServerCertificate=true;";
+        } else {
+            $connectionOptions .= "Encrypt=true;";
+        }	    
+        $conn = new PDO($connectionOptions, $username, $encodedPassword);
     $conn = new PDO("sqlsrv:server=$serverName;Database=$database", $username, $encodedPassword);
     // set the PDO error mode to exception
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
