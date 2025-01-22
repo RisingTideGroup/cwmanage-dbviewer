@@ -24,9 +24,7 @@ if ($serverName && $database && $username && $password) {
     	  PDO::SQLSRV_ATTR_TRUST_SERVER_CERTIFICATE => $isIgnoreTrust
 	];
         $conn = new PDO("sqlsrv:server=$serverName;Database=$database;", $username, $encodedPassword, $options);
-        // set the PDO error mode to exception
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		
+	
 	$stmt = $conn->query("Select Message FROM System_Table where Description = 'display_version'");
         $dbVersion = $stmt->fetchColumn();
         $isDbConnected = true;
