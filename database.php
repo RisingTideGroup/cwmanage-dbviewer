@@ -7,11 +7,11 @@ if (!isset($_SESSION['hostname']) || !isset($_SESSION['dbname']) || !isset($_SES
 	exit;
 }
 
-$serverName = $_SESSION['hostname'];
-$database = $_SESSION['dbname'];
-$username = $_SESSION['username'];
-$password = $_SESSION['password'];
-$ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? false;
+$serverName = $_SESSION['hostname'] ?? null;
+$database = $_SESSION['dbname'] ?? null;
+$username = $_SESSION['username'] ?? null;
+$password = $_SESSION['password'] ?? null;
+$ignoreTrust = $_SESSION['ignore_trust'] ?? false;
 
 
 // Ensure `$ignoreTrust` is a proper boolean
