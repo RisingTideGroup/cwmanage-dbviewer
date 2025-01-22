@@ -10,7 +10,14 @@ $isDbConnected = false;
 if ($serverName && $database && $username && $password) {
     try {
 	$encodedPassword = addcslashes($password, '{}');
-        $conn = new PDO("sqlsrv:server=$serverName;Database=$database", $username, $encodedPassword);
+        $ignoreTrust = isset($_POST['ignore_trust']) && $_POST['ignore_trust'] === 'on';
+        $connectionOptions = "sqlsrv:server=$serverName;Database=$database;";
+        if ($ignoreTrust) {
+            $connectionOptions .= "Encrypt=true;TrustServerCertificate=true;";
+        } else {
+            $connectionOptions .= "Encrypt=true;";
+        }	    
+        $conn = new PDO($connectionOptions, $username, $encodedPassword);
         // set the PDO error mode to exception
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		
@@ -37,7 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'hostname' => $_POST['hostname'],
             'dbname' => $_POST['dbname'],
             'username' => $_POST['username'],
-            'password' => $_POST['password']
+            'password' => $_POST['password'],
+            'ignore_trust' => isset($_POST['ignore_trust']) ? true : false,
         ];
 
         // Add new settings to the saved settings
@@ -64,7 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['dbname'] = $savedSettings[$index]['dbname'];
             $_SESSION['username'] = $savedSettings[$index]['username'];
             $_SESSION['password'] = $savedSettings[$index]['password'];
-			header("Location: /");
+            $_SESSION['ignore_trust'] = $savedSettings[$index]['ignore_trust'] ?? false; // Default to false
+            header("Location: /");
         }
     }
 }
@@ -232,12 +241,16 @@ if (isset($_GET['companyid'])) {
                         <label for="password">Password</label>
                         <input type="password" class="form-control" id="password" name="password">
                     </div>
-					
+		<div class="mb-3 form-check-inline">
+			<input type="checkbox" class="form-check-input" id="ignore_trust" name="ignore_trust">
+	    		<?php if (!empty($savedSettings[$index]['ignore_trust'])) echo 'checked'; ?>>			
+			<label class="form-check-label" for="ignore_trust">Ignore Certificate Trust</label>
+		</div>					
                     <div class="mb-3 form-check-inline">
                         <input type="checkbox" class="form-check-input" id="save_settings" name="save_settings">
                         <label class="form-check-label" for="save_settings">Save settings for future use</label>
                     </div>
-					</div>
+		</div>
                     <button type="submit" class="btn btn-primary">Connect</button>
                 </form>
             <?php endif; ?>
