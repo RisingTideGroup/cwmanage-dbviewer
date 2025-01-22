@@ -37,6 +37,6 @@ if ($serverName && $database && $username && $password) {
     } catch(PDOException $e) {
         // Connection failed, show form
         $dbErrorMessage = $e->getMessage();
-        header("Location: /index.php?error=connection_failed&message=" . urlencode($dbErrorMessage));
+        header("Location: /index.php?message=" . urlencode($dbErrorMessage));
 	exit;
 }
