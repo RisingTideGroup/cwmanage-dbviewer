@@ -2,8 +2,8 @@
 session_start();
 
 if (!isset($_SESSION['hostname']) || !isset($_SESSION['dbname']) || !isset($_SESSION['username']) || !isset($_SESSION['password'])) {
-    echo "No database connection details available.";
-	header("Location: /index.php");
+    $dbErrorMessage = "No database connection details available.";
+	header("Location: /index.php?message=" . urlencode($dbErrorMessage));
 	exit;
 }
 
