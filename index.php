@@ -5,7 +5,7 @@ $serverName = $_SESSION['hostname'] ?? null;
 $database = $_SESSION['dbname'] ?? null;
 $username = $_SESSION['username'] ?? null;
 $password = $_SESSION['password'] ?? null;
-$ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? false;
+$ignoreTrust = $_SESSION['ignore_trust'] ?? false;
 
 
 // Ensure `$ignoreTrust` is a proper boolean
@@ -248,7 +248,7 @@ if (isset($_GET['companyid'])) {
                     </div>
 		<div class="mb-3 form-check-inline">
 			<input type="checkbox" class="form-check-input" id="ignore_trust" name="ignore_trust">
-	    		<?php if (!empty($savedSettings[$index]['ignore_trust'])) echo 'checked'; ?>>			
+	    		<?php if (!empty($savedSettings[$index]['ignore_trust'])) echo 'checked'; ?>			
 			<label class="form-check-label" for="ignore_trust">Ignore Certificate Trust</label>
 		</div>					
                     <div class="mb-3 form-check-inline">
