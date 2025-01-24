@@ -11,7 +11,7 @@ $serverName = $_SESSION['hostname'] ?? null;
 $database = $_SESSION['dbname'] ?? null;
 $username = $_SESSION['username'] ?? null;
 $password = $_SESSION['password'] ?? null;
-$ignoreTrust = $_SESSION['ignore_trust'] ?? false;
+$ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? false;
 
 
 // Ensure `$ignoreTrust` is a proper boolean
@@ -25,18 +25,19 @@ if ($serverName && $database && $username && $password) {
 	$encodedPassword = addcslashes($password, '{}');
 
 	$options = [
-    	  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    	  PDO::SQLSRV_ATTR_ENCRYPT => true,
-    	  PDO::SQLSRV_ATTR_TRUST_SERVER_CERTIFICATE => $isIgnoreTrust
-	];
-        $conn = new PDO("sqlsrv:server=$serverName;Database=$database;", $username, $encodedPassword, $options);
-		
+    	  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,   	
+	]; 
+
+
+        $conn = new PDO("sqlsrv:server=$serverName;Database=$database;Encrypt=true;TrustServerCertificate=$isIgnoreTrust", $username, $encodedPassword, $options);
+	
 	$stmt = $conn->query("Select Message FROM System_Table where Description = 'display_version'");
         $dbVersion = $stmt->fetchColumn();
         $isDbConnected = true;
-    } catch(PDOException $e) {
+    }  catch(PDOException $e) {
         // Connection failed, show form
         $dbErrorMessage = $e->getMessage();
         header("Location: /index.php?message=" . urlencode($dbErrorMessage));
 	exit;
+    }
 }
