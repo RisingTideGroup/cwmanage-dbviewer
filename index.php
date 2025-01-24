@@ -5,8 +5,7 @@ $serverName = $_SESSION['hostname'] ?? null;
 $database = $_SESSION['dbname'] ?? null;
 $username = $_SESSION['username'] ?? null;
 $password = $_SESSION['password'] ?? null;
-$ignoreTrust = $_SESSION['ignore_trust'] ?? false;
-
+$ignoreTrust = $_SESSION['ignore_trust'] === 'on' ?? false;
 
 // Ensure `$ignoreTrust` is a proper boolean
 $isIgnoreTrust = filter_var($ignoreTrust, FILTER_VALIDATE_BOOLEAN);
@@ -20,17 +19,19 @@ if ($serverName && $database && $username && $password) {
 	$encodedPassword = addcslashes($password, '{}');
 
 	$options = [
-    	  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    	  PDO::SQLSRV_ATTR_ENCRYPT => true,
-    	  PDO::SQLSRV_ATTR_TRUST_SERVER_CERTIFICATE => $isIgnoreTrust
-	];
-        $conn = new PDO("sqlsrv:server=$serverName;Database=$database;", $username, $encodedPassword, $options);
+    	  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,   	
+	]; 
+
+
+        $conn = new PDO("sqlsrv:server=$serverName;Database=$database;Encrypt=true;TrustServerCertificate=$isIgnoreTrust", $username, $encodedPassword, $options);
 	
 	$stmt = $conn->query("Select Message FROM System_Table where Description = 'display_version'");
         $dbVersion = $stmt->fetchColumn();
         $isDbConnected = true;
     } catch(PDOException $e) {
+    
         // Connection failed, show form
+        error_log($e->getMessage()); // Log error to server logs
         $dbErrorMessage = $e->getMessage();	    
     }
 }
@@ -50,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'dbname' => $_POST['dbname'],
             'username' => $_POST['username'],
             'password' => $_POST['password'],
-            'ignore_trust' => isset($_POST['ignore_trust']) ? true : false,
+            'ignore_trust' => isset($_POST['ignore_trust']) ? 'on' : 'off',
         ];
 
         // Add new settings to the saved settings
@@ -70,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$_SESSION['dbname'] = $_POST['dbname'];
 			$_SESSION['username'] = $_POST['username'];
 			$_SESSION['password'] = $_POST['password'];
+			$_SESSION['ignore_trust'] = isset($_POST['ignore_trust']) ? 'on' : 'off';
 			header("Location: /");
 		}
         elseif (isset($savedSettings[$index])) {
@@ -77,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['dbname'] = $savedSettings[$index]['dbname'];
             $_SESSION['username'] = $savedSettings[$index]['username'];
             $_SESSION['password'] = $savedSettings[$index]['password'];
-            $_SESSION['ignore_trust'] = $savedSettings[$index]['ignore_trust'] ?? false; // Default to false
+            $_SESSION['ignore_trust'] = $savedSettings[$index]['ignore_trust'] ?? 'off'; // Default to off
             header("Location: /");
         }
     }
